@@ -1,0 +1,70 @@
+<section class="container pl">
+  <div class="page-head">
+    <div>
+      <span class="eyebrow">The shop</span>
+      <h1>Handmade products</h1>
+      <p *ngIf="result && !loading">{{ result.total }} {{ result.total === 1 ? 'piece' : 'pieces' }} found</p>
+    </div>
+    <button type="button" class="btn btn-outline filters-toggle" (click)="filtersOpen = !filtersOpen">
+      <cf-icon name="menu" [size]="16"></cf-icon> {{ filtersOpen ? 'Hide filters' : 'Filters' }}
+    </button>
+  </div>
+
+  <div class="layout">
+    <aside class="filters card" [class.open]="filtersOpen">
+      <form [formGroup]="form" (submit)="$event.preventDefault()">
+        <div class="field">
+          <label for="s">Search</label>
+          <input id="s" class="input" formControlName="search" placeholder="Vase, bag, painting…" autocomplete="off">
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <div class="cat-list">
+            <button type="button" [class.on]="!form.value.category" (click)="setCategory(null)">All categories</button>
+            <button type="button" *ngFor="let c of categories" [class.on]="form.value.category === c.id" (click)="setCategory(c.id)">
+              {{ c.name }} <small>{{ c.productCount }}</small>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Price range ($)</label>
+          <div class="range">
+            <input class="input" type="number" min="0" formControlName="minPrice" placeholder="Min" aria-label="Minimum price">
+            <span>–</span>
+            <input class="input" type="number" min="0" formControlName="maxPrice" placeholder="Max" aria-label="Maximum price">
+          </div>
+          <span class="error" *ngIf="priceError">{{ priceError }}</span>
+        </div>
+        <label class="checkbox"><input type="checkbox" formControlName="featured"> Featured pieces only</label>
+        <div class="field">
+          <label for="sort">Sort by</label>
+          <select id="sort" class="select" formControlName="sort">
+            <option value="newest">Newest first</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="name">Name (A–Z)</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-ghost btn-block" (click)="clearFilters()">Clear all filters</button>
+      </form>
+    </aside>
+
+    <div class="results">
+      <div class="grid-cards" *ngIf="loading"><cf-skeleton-card *ngFor="let s of skeletons"></cf-skeleton-card></div>
+
+      <cf-empty-state *ngIf="!loading && error" icon="alert" title="Couldn't load products" [message]="error">
+        <button class="btn btn-outline" (click)="applyFilters()">Try again</button>
+      </cf-empty-state>
+
+      <cf-empty-state *ngIf="!loading && !error && result && !result.items.length" icon="search" title="No products match your filters"
+        message="Try a different search, widen the price range, or clear the filters.">
+        <button class="btn btn-primary" (click)="clearFilters()">Clear filters</button>
+      </cf-empty-state>
+
+      <ng-container *ngIf="!loading && !error && result && result.items.length">
+        <div class="grid-cards"><cf-product-card *ngFor="let p of result.items" [product]="p"></cf-product-card></div>
+        <cf-pagination [page]="result.page" [totalPages]="result.totalPages" (pageChange)="goToPage($event)"></cf-pagination>
+      </ng-container>
+    </div>
+  </div>
+</section>

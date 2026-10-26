@@ -1,0 +1,8 @@
+node_modules/
+dist/
+out-tsc/
+.angular/
+uploads/
+.env
+.env.*
+!.env.example

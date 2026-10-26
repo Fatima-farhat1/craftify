@@ -1,0 +1,95 @@
+<div class="container ad">
+  <div class="skel-grid" *ngIf="loading"><div class="skeleton big"></div><div><div class="skeleton l1"></div><div class="skeleton l2"></div><div class="skeleton l3"></div></div></div>
+
+  <cf-empty-state *ngIf="!loading && !auction" [icon]="notFound ? 'search' : 'alert'" [title]="notFound ? 'Auction not found' : 'Something went wrong'"
+    [message]="notFound ? 'This auction does not exist or was removed.' : error" actionLabel="View auctions" actionLink="/auctions"></cf-empty-state>
+
+  <ng-container *ngIf="auction as a">
+    <nav class="crumbs"><a routerLink="/">Home</a><span>/</span><a routerLink="/auctions">Auctions</a><span>/</span><span>{{ a.productName }}</span></nav>
+
+    <div class="grid">
+      <cf-gallery [images]="gallery" [alt]="a.productName"></cf-gallery>
+
+      <div class="info">
+        <span class="state" [ngClass]="'s-' + a.status.toLowerCase()">
+          <span class="dot" *ngIf="a.status === 'ACTIVE'"></span>
+          {{ a.status === 'ACTIVE' ? 'Live auction' : a.status === 'UPCOMING' ? 'Starts soon' : a.status === 'ENDED' ? 'Auction ended' : 'Cancelled' }}
+        </span>
+        <span class="eyebrow">{{ a.categoryName }}</span>
+        <h1>{{ a.productName }}</h1>
+        <p class="desc pre" *ngIf="a.productDescription">{{ a.productDescription }}</p>
+
+        <div class="bidbox">
+          <div class="price-line">
+            <div><span class="lbl">{{ priceLabel }}</span><strong class="big">{{ (a.status === 'ENDED' && a.winningBid ? a.winningBid : a.currentPrice) | money }}</strong></div>
+            <div class="count"><strong>{{ a.bidCount }}</strong> {{ a.bidCount === 1 ? 'bid' : 'bids' }}</div>
+          </div>
+
+          <div class="timer" *ngIf="a.status === 'ACTIVE' || a.status === 'UPCOMING'">
+            <span class="lbl">{{ a.status === 'ACTIVE' ? 'Auction ends in' : 'Auction starts in' }}</span>
+            <cf-countdown [target]="a.status === 'ACTIVE' ? a.endTime : a.startTime" [serverTime]="a.serverTime" (finished)="refresh()"></cf-countdown>
+          </div>
+
+          <div class="dates">
+            <div><span class="lbl">Starts</span>{{ a.startTime | date:'MMM d, y · h:mm a' }}</div>
+            <div><span class="lbl">Ends</span>{{ a.endTime | date:'MMM d, y · h:mm a' }}</div>
+          </div>
+
+          <ng-container [ngSwitch]="a.status">
+            <!-- ACTIVE -->
+            <ng-container *ngSwitchCase="'ACTIVE'">
+              <div class="note good" *ngIf="a.isLeading"><cf-icon name="check" [size]="18"></cf-icon> You're the highest bidder at {{ a.myHighestBid | money }}.</div>
+              <div class="note warn" *ngIf="!a.isLeading && a.myHighestBid"><cf-icon name="alert" [size]="18"></cf-icon> You've been outbid. Your last bid was {{ a.myHighestBid | money }}.</div>
+
+              <form *ngIf="canBid" (ngSubmit)="placeBid()" class="bid-form" novalidate>
+                <label for="bid">Your bid <small>(minimum {{ a.minNextBid | money }})</small></label>
+                <div class="bid-input"><span>$</span><input id="bid" class="input" type="number" step="0.01" [min]="a.minNextBid" [formControl]="amount" inputmode="decimal"></div>
+                <div class="quick"><button type="button" *ngFor="let n of quickAdds" (click)="quick(n)">+{{ n }}</button></div>
+                <div class="alert alert-error" *ngIf="bidError" role="alert">{{ bidError }}</div>
+                <button class="btn btn-primary btn-lg btn-block" type="submit" [disabled]="submitting">{{ submitting ? 'Submitting bid…' : 'Place bid' }}</button>
+                <p class="fine">Bids are binding. The highest bid when the timer ends wins.</p>
+              </form>
+
+              <div class="login-cta" *ngIf="!user">
+                <p>Log in to place a bid on this piece.</p>
+                <a class="btn btn-primary btn-block" routerLink="/login" [queryParams]="{ returnUrl: '/auctions/' + a.id }">Log in to bid</a>
+                <a class="link" routerLink="/register" [queryParams]="{ returnUrl: '/auctions/' + a.id }">Create an account</a>
+              </div>
+              <div class="note" *ngIf="user && user.role === 'ADMIN'">Admin accounts can't place bids.</div>
+            </ng-container>
+
+            <!-- UPCOMING -->
+            <div class="note" *ngSwitchCase="'UPCOMING'"><cf-icon name="clock" [size]="18"></cf-icon> Bidding opens when the countdown reaches zero. You can't bid yet.</div>
+
+            <!-- ENDED -->
+            <ng-container *ngSwitchCase="'ENDED'">
+              <div class="note good" *ngIf="a.isWinner"><cf-icon name="trophy" [size]="18"></cf-icon>
+                <span>Congratulations — you won this auction! <a class="link" routerLink="/dashboard/won">See next steps</a></span></div>
+              <div class="note" *ngIf="!a.isWinner && a.winningBid">This auction has ended. Winning bid: {{ a.winningBid | money }}<span *ngIf="a.winner && a.winner.name"> by {{ a.winner.name }}</span>.</div>
+              <div class="note" *ngIf="!a.winningBid">This auction ended without any bids.</div>
+            </ng-container>
+
+            <div class="note warn" *ngSwitchCase="'CANCELLED'">This auction was cancelled.</div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <section class="history">
+      <h2>Bid history</h2>
+      <cf-empty-state *ngIf="!bids.length" icon="gavel" title="No bids yet" message="Be the first to bid on this piece."></cf-empty-state>
+      <div class="table-wrap panel" *ngIf="bids.length">
+        <table class="table">
+          <thead><tr><th>Bidder</th><th>Amount</th><th>Time</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let b of bids; let i = index" [class.top]="i === 0">
+              <td>{{ b.bidder.name }} <span class="you" *ngIf="b.isMine">You</span> <span class="lead" *ngIf="i === 0 && a.status === 'ACTIVE'">Highest</span></td>
+              <td><strong>{{ b.amount | money }}</strong></td>
+              <td class="muted">{{ b.createdAt | date:'MMM d, h:mm:ss a' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </ng-container>
+</div>

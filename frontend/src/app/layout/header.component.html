@@ -1,0 +1,90 @@
+<header class="hdr" [class.scrolled]="scrolled">
+  <div class="container row">
+    <a routerLink="/" class="brand" aria-label="Craftify home">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="9" fill="#D9600F"/>
+        <path d="M12 8h8M13 8c0 3-3 4-3 9a6 6 0 0 0 12 0c0-5-3-6-3-9" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="word">Craftify</span>
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <a routerLink="/products" routerLinkActive="active">Shop</a>
+      <a routerLink="/categories" routerLinkActive="active">Categories</a>
+      <a routerLink="/auctions" routerLinkActive="active"><span class="live-dot"></span>Auctions</a>
+    </nav>
+
+    <form class="search" (submit)="search(q.value, $event)" role="search">
+      <cf-icon name="search" [size]="18"></cf-icon>
+      <input #q type="search" placeholder="Search handmade treasures…" aria-label="Search products" autocomplete="off">
+    </form>
+
+    <div class="actions">
+      <ng-container *ngIf="session.user$ | async as user; else guest">
+        <ng-container *ngIf="user.role === 'USER'">
+          <a class="icon-btn" routerLink="/dashboard/favorites" aria-label="Favorites" matTooltip="Favorites"><cf-icon name="heart"></cf-icon></a>
+          <a class="icon-btn" routerLink="/cart" aria-label="Cart" matTooltip="Cart">
+            <cf-icon name="bag"></cf-icon>
+            <span class="badge" *ngIf="cartCount$ | async as n">{{ n > 99 ? '99+' : n }}</span>
+          </a>
+          <a class="icon-btn" routerLink="/dashboard/notifications" aria-label="Notifications" matTooltip="Notifications">
+            <cf-icon name="bell"></cf-icon>
+            <span class="badge" *ngIf="notificationCount$ | async as n">{{ n > 99 ? '99+' : n }}</span>
+          </a>
+        </ng-container>
+
+        <button type="button" class="user-btn" [matMenuTriggerFor]="userMenu" aria-label="Account menu">
+          <span class="avatar">
+            <img *ngIf="user.profileImage; else ini" [src]="user.profileImage | imgUrl" [alt]="user.firstName">
+            <ng-template #ini>{{ initials(user.firstName, user.lastName) }}</ng-template>
+          </span>
+          <span class="uname">{{ user.firstName }}</span>
+          <cf-icon name="chevron-down" [size]="16"></cf-icon>
+        </button>
+        <mat-menu #userMenu="matMenu" xPosition="before">
+          <ng-container *ngIf="user.role === 'ADMIN'; else customerMenu">
+            <a mat-menu-item routerLink="/admin">Admin panel</a>
+          </ng-container>
+          <ng-template #customerMenu>
+            <a mat-menu-item routerLink="/dashboard">My dashboard</a>
+            <a mat-menu-item routerLink="/dashboard/orders">My orders</a>
+            <a mat-menu-item routerLink="/dashboard/bids">My bids</a>
+            <a mat-menu-item routerLink="/dashboard/messages">Messages</a>
+            <a mat-menu-item routerLink="/dashboard/profile">Profile</a>
+          </ng-template>
+          <button mat-menu-item (click)="logout()">Log out</button>
+        </mat-menu>
+      </ng-container>
+
+      <ng-template #guest>
+        <a class="btn btn-ghost btn-sm hide-sm" routerLink="/login">Log in</a>
+        <a class="btn btn-primary btn-sm hide-sm" routerLink="/register">Join Craftify</a>
+      </ng-template>
+
+      <button type="button" class="icon-btn burger" (click)="menuOpen = !menuOpen" [attr.aria-expanded]="menuOpen" aria-label="Menu">
+        <cf-icon [name]="menuOpen ? 'x' : 'menu'" [size]="22"></cf-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile" *ngIf="menuOpen">
+    <form class="search m-search" (submit)="search(mq.value, $event)">
+      <cf-icon name="search" [size]="18"></cf-icon>
+      <input #mq type="search" placeholder="Search handmade treasures…" aria-label="Search products">
+    </form>
+    <a routerLink="/products">Shop</a>
+    <a routerLink="/categories">Categories</a>
+    <a routerLink="/auctions"><span class="live-dot"></span>Auctions</a>
+    <ng-container *ngIf="session.user$ | async as user; else mGuest">
+      <a *ngIf="user.role === 'USER'" routerLink="/cart">Cart</a>
+      <a [routerLink]="user.role === 'ADMIN' ? '/admin' : '/dashboard'">{{ user.role === 'ADMIN' ? 'Admin panel' : 'My dashboard' }}</a>
+      <button type="button" (click)="logout()">Log out</button>
+    </ng-container>
+    <ng-template #mGuest>
+      <div class="m-cta">
+        <a class="btn btn-outline" routerLink="/login">Log in</a>
+        <a class="btn btn-primary" routerLink="/register">Join Craftify</a>
+      </div>
+    </ng-template>
+  </div>
+</header>

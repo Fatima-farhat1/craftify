@@ -1,0 +1,22 @@
+@import '~@angular/material/theming';
+
+$craftify-orange: (
+  50: #FFF5EC, 100: #FFE7D1, 200: #FFCFA3, 300: #FFB070, 400: #F98D3E,
+  500: #EE7421, 600: #D9600F, 700: #B54A0A, 800: #8F3A0A, 900: #6A2B06,
+  A100: #FFCFA3, A200: #FFB070, A400: #F98D3E, A700: #B54A0A,
+  contrast: (
+    50: $dark-primary-text, 100: $dark-primary-text, 200: $dark-primary-text, 300: $dark-primary-text,
+    400: $dark-primary-text, 500: $light-primary-text, 600: $light-primary-text, 700: $light-primary-text,
+    800: $light-primary-text, 900: $light-primary-text, A100: $dark-primary-text, A200: $dark-primary-text,
+    A400: $dark-primary-text, A700: $light-primary-text
+  )
+);
+
+$cf-typography: mat-typography-config($font-family: '"DM Sans", system-ui, sans-serif');
+@include mat-core($cf-typography);
+
+$cf-primary: mat-palette($craftify-orange, 600);
+$cf-accent: mat-palette($craftify-orange, 400);
+$cf-warn: mat-palette($mat-red, 700);
+$cf-theme: mat-light-theme($cf-primary, $cf-accent, $cf-warn);
+@include angular-material-theme($cf-theme);

@@ -1,0 +1,23 @@
+@import '~@angular/material/theming';
+
+$craftify-typography: mat-typography-config($font-family: 'Inter, system-ui, sans-serif');
+@include mat-core($craftify-typography);
+
+$craftify-primary: mat-palette($mat-deep-orange, 600, 400, 800);
+$craftify-accent: mat-palette($mat-amber, 700);
+$craftify-warn: mat-palette($mat-red, 700);
+$craftify-theme: mat-light-theme($craftify-primary, $craftify-accent, $craftify-warn);
+@include angular-material-theme($craftify-theme);
+
+/* snackbars */
+.mat-snack-bar-container { border-radius: 12px !important; font-weight: 500; }
+.mat-snack-bar-container.toast-success { background: var(--success); color: #fff; }
+.mat-snack-bar-container.toast-error { background: var(--danger); color: #fff; }
+.mat-snack-bar-container.toast-info { background: var(--ink); color: #fff; }
+.mat-snack-bar-container .mat-simple-snackbar-action { color: #fff; }
+
+/* menus & badges */
+.mat-menu-panel { border-radius: 14px !important; min-width: 220px !important; box-shadow: var(--shadow) !important; }
+.mat-menu-item { font-size: .92rem; }
+.mat-menu-item .mat-icon { color: var(--orange-600); }
+.mat-badge-content { background: var(--orange-500); color: #fff; font-weight: 700; font-family: var(--font-body); }

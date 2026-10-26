@@ -1,0 +1,23 @@
+:host { display: block; }
+.ac { height: 100%; display: flex; flex-direction: column; background: var(--ink); color: #F6EEE3; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid rgba(255, 255, 255, .06); transition: transform .25s, box-shadow .25s; }
+.ac:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.ac.live { box-shadow: 0 0 0 1.5px var(--brand-500), 0 18px 40px -18px rgba(238, 116, 33, .55); }
+.media { position: relative; display: block; aspect-ratio: 4 / 3.3; overflow: hidden; background: #3a2f27; }
+.media img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
+.ac:hover .media img { transform: scale(1.05); }
+.ac.ended .media img { filter: grayscale(.6); }
+.media::after { content: ''; position: absolute; inset: auto 0 0 0; height: 45%; background: linear-gradient(transparent, rgba(43, 33, 25, .7)); }
+.tag { position: absolute; left: 14px; top: 14px; z-index: 1; display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.tag-active { background: var(--brand-600); color: #fff; }
+.tag-upcoming { background: rgba(255, 255, 255, .92); color: var(--ink); }
+.tag-ended, .tag-cancelled { background: rgba(0, 0, 0, .6); color: #ddd; }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: pulse 1.4s ease-out infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, .8); } 100% { box-shadow: 0 0 0 9px rgba(255, 255, 255, 0); } }
+.body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.cat { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--brand-300); font-weight: 700; }
+.name { font-family: var(--font-display); font-size: 1.15rem; margin: 0 0 14px; line-height: 1.3; color: #fff; }
+.name a:hover { color: var(--brand-300); }
+.stats { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; margin-bottom: 14px; border-top: 1px solid rgba(255, 255, 255, .1); border-bottom: 1px solid rgba(255, 255, 255, .1); margin-top: auto; }
+.lbl { display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #B5A797; margin-bottom: 3px; }
+.price { font-size: 1.5rem; font-family: var(--font-display); color: #fff; }
+.time { text-align: right; } .time strong, .time cf-countdown { color: var(--brand-300); font-size: 1.05rem; }

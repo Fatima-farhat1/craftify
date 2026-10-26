@@ -1,0 +1,23 @@
+<article class="pc">
+  <a class="media" [routerLink]="['/products', product.id]" [attr.aria-label]="product.name">
+    <img [src]="product.image | imgUrl" [alt]="product.name" loading="lazy">
+    <div class="tags">
+      <span *ngIf="product.hasAuction" class="tag tag-auction"><cf-icon name="zap" [size]="12" [filled]="true"></cf-icon> Auction</span>
+      <span *ngIf="product.isFeatured && !product.hasAuction" class="tag tag-featured">Featured</span>
+      <span *ngIf="outOfStock" class="tag tag-sold">Sold out</span>
+    </div>
+  </a>
+  <button type="button" class="fav" [class.on]="favorites.isFavorite(product.id)" (click)="toggleFavorite($event)"
+          [attr.aria-label]="favorites.isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'"
+          [attr.aria-pressed]="favorites.isFavorite(product.id)">
+    <cf-icon name="heart" [size]="18" [filled]="favorites.isFavorite(product.id)"></cf-icon>
+  </button>
+  <div class="body">
+    <span class="cat">{{ product.categoryName }}</span>
+    <h3 class="name"><a [routerLink]="['/products', product.id]">{{ product.name }}</a></h3>
+    <div class="foot">
+      <span class="price">{{ product.price | money }}</span>
+      <a class="btn btn-outline btn-sm" [routerLink]="['/products', product.id]">View Product</a>
+    </div>
+  </div>
+</article>

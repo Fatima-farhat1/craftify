@@ -1,0 +1,41 @@
+:host { display: block; position: sticky; top: 0; z-index: 50; }
+.hdr { background: rgba(251, 247, 240, .88); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; transition: border-color .25s, box-shadow .25s; }
+.hdr.scrolled { border-color: var(--line); box-shadow: 0 6px 24px -16px rgba(43, 33, 25, .35); }
+.row { height: var(--header-h); display: flex; align-items: center; gap: 28px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; }
+.mark { width: 34px; height: 34px; }
+.word { font-family: var(--font-display); font-size: 1.55rem; font-weight: 700; letter-spacing: -.02em; }
+.nav { display: flex; gap: 6px; }
+.nav a { position: relative; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; font-weight: 500; color: var(--ink-soft); transition: background .2s, color .2s; }
+.nav a:hover { background: var(--beige); color: var(--ink); }
+.nav a.active { color: var(--brand-700); background: var(--brand-50); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand-500); box-shadow: 0 0 0 0 rgba(238, 116, 33, .6); animation: ping 1.8s infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 7px rgba(238, 116, 33, 0); } 100% { box-shadow: 0 0 0 0 rgba(238, 116, 33, 0); } }
+
+.search { position: relative; flex: 1; max-width: 360px; display: flex; align-items: center; margin-left: auto; color: var(--muted); }
+.search cf-icon { position: absolute; left: 14px; pointer-events: none; }
+.search input { width: 100%; padding: 10px 16px 10px 42px; font: inherit; font-size: .92rem; color: var(--ink); background: var(--white); border: 1.5px solid var(--line); border-radius: 999px; transition: border-color .2s, box-shadow .2s; }
+.search input:focus { outline: none; border-color: var(--brand-400); box-shadow: 0 0 0 4px var(--brand-100); }
+
+.actions { display: flex; align-items: center; gap: 4px; }
+.icon-btn { position: relative; display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-soft); transition: background .2s, color .2s; }
+.icon-btn:hover { background: var(--beige); color: var(--brand-700); }
+.badge { position: absolute; top: 3px; right: 1px; min-width: 18px; height: 18px; padding: 0 5px; display: grid; place-items: center; border-radius: 999px; background: var(--brand-600); color: #fff; font-size: .68rem; font-weight: 700; border: 2px solid var(--cream); }
+.user-btn { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; padding: 4px 10px 4px 4px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--white); color: var(--ink-soft); font: inherit; font-weight: 600; transition: border-color .2s; }
+.user-btn:hover { border-color: var(--brand-300); }
+.avatar { width: 32px; height: 32px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--brand-100); color: var(--brand-800); font-size: .8rem; font-weight: 700; text-transform: uppercase; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.burger { display: none; }
+
+.mobile { display: none; }
+@media (max-width: 960px) {
+  .nav, .search:not(.m-search), .hide-sm, .uname { display: none; }
+  .row { gap: 12px; } .actions { margin-left: auto; }
+  .burger { display: inline-grid; }
+  .user-btn { padding-right: 6px; } .user-btn cf-icon { display: none; }
+  .mobile { display: flex; flex-direction: column; gap: 2px; padding: 8px 16px 20px; border-top: 1px solid var(--line); background: var(--cream); animation: drop .2s ease-out; }
+  .mobile a, .mobile button { display: flex; align-items: center; gap: 8px; padding: 14px 8px; border: 0; background: none; font: inherit; font-size: 1.05rem; font-weight: 500; color: var(--ink); text-align: left; border-bottom: 1px solid var(--line); }
+  .m-search { max-width: none; margin: 8px 0 8px; } .m-search cf-icon { display: block; }
+  .m-cta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 14px; } .m-cta .btn { border-bottom: 0; }
+}
+@keyframes drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }

@@ -1,0 +1,38 @@
+<footer class="ft">
+  <div class="container grid">
+    <div class="about">
+      <a routerLink="/" class="brand">
+        <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#EE7421"/><path d="M12 8h8M13 8c0 3-3 4-3 9a6 6 0 0 0 12 0c0-5-3-6-3-9" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Craftify</span>
+      </a>
+      <p>A home for handmade stories and culturally inspired creations — from everyday pieces to rare finds you can bid on.</p>
+      <div class="social">
+        <a href="#" aria-label="Instagram"><cf-icon name="instagram" [size]="18"></cf-icon></a>
+        <a href="#" aria-label="Facebook"><cf-icon name="facebook" [size]="18"></cf-icon></a>
+        <a href="mailto:hello@craftify.com" aria-label="Email"><cf-icon name="mail" [size]="18"></cf-icon></a>
+      </div>
+    </div>
+    <div>
+      <h4>Shop</h4>
+      <a routerLink="/products">All products</a>
+      <a routerLink="/categories">Categories</a>
+      <a routerLink="/auctions">Live auctions</a>
+    </div>
+    <div>
+      <h4>Account</h4>
+      <a routerLink="/login">Log in</a>
+      <a routerLink="/register">Create account</a>
+      <a routerLink="/dashboard/orders">My orders</a>
+      <a routerLink="/dashboard/bids">My bids</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="mailto:hello@craftify.com">hello&#64;craftify.com</a>
+      <span><cf-icon name="map-pin" [size]="15"></cf-icon> Lebanon</span>
+    </div>
+  </div>
+  <div class="container bottom">
+    <span>© {{ year }} Craftify. Handmade with care.</span>
+    <span>Every piece has a story.</span>
+  </div>
+</footer>

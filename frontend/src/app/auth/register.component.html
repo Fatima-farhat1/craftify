@@ -1,0 +1,52 @@
+<div class="shell">
+  <aside class="panel">
+    <h2>Join a community that values the handmade.</h2>
+    <p>Save your favorite pieces, bid on rare finds and follow every order in one place.</p>
+    <div class="arches" aria-hidden="true"><span></span><span></span><span></span></div>
+  </aside>
+  <div class="side">
+    <div class="box">
+      <h1>Create your account</h1>
+      <p class="sub">It only takes a minute.</p>
+
+      <div class="alert alert-error" *ngIf="error" role="alert">{{ error }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row2">
+          <div class="field">
+            <label for="fn">First name</label>
+            <input id="fn" class="input" formControlName="firstName" autocomplete="given-name" [class.invalid]="invalid('firstName')">
+            <span class="error" *ngIf="invalid('firstName')">Required.</span>
+          </div>
+          <div class="field">
+            <label for="ln">Last name</label>
+            <input id="ln" class="input" formControlName="lastName" autocomplete="family-name" [class.invalid]="invalid('lastName')">
+            <span class="error" *ngIf="invalid('lastName')">Required.</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="em">Email</label>
+          <input id="em" class="input" type="email" formControlName="email" autocomplete="email" [class.invalid]="invalid('email')">
+          <span class="error" *ngIf="invalid('email')">Please enter a valid email.</span>
+        </div>
+        <div class="field">
+          <label for="pw">Password</label>
+          <div class="pw">
+            <input id="pw" class="input" [type]="showPassword ? 'text' : 'password'" formControlName="password" autocomplete="new-password" [class.invalid]="invalid('password')">
+            <button type="button" (click)="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
+          </div>
+          <span class="error" *ngIf="invalid('password')">Use at least 8 characters.</span>
+          <span class="hint" *ngIf="!invalid('password')">At least 8 characters.</span>
+        </div>
+        <div class="field">
+          <label for="cpw">Confirm password</label>
+          <input id="cpw" class="input" [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" autocomplete="new-password" [class.invalid]="mismatch">
+          <span class="error" *ngIf="mismatch">Passwords do not match.</span>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit" [disabled]="loading">{{ loading ? 'Creating account…' : 'Create account' }}</button>
+      </form>
+
+      <p class="foot">Already have an account? <a routerLink="/login" [queryParams]="returnUrl ? { returnUrl: returnUrl } : {}">Log in</a></p>
+    </div>
+  </div>
+</div>

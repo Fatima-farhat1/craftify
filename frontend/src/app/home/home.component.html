@@ -1,0 +1,98 @@
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="copy">
+      <span class="eyebrow">Handmade · Cultural · One of a kind</span>
+      <h1>Handmade stories.<br><em>Unique creations.</em></h1>
+      <p class="lead">Discover handmade products created with passion — from hand-thrown pottery to heirloom textiles. Every piece carries the story of the hands that made it.</p>
+      <div class="cta">
+        <a class="btn btn-primary btn-lg" routerLink="/products">Explore Products <cf-icon name="arrow-right" [size]="18"></cf-icon></a>
+        <a class="btn btn-outline btn-lg" routerLink="/auctions">View Auctions</a>
+      </div>
+      <ul class="trust">
+        <li><cf-icon name="check" [size]="16"></cf-icon> Made by artisans</li>
+        <li><cf-icon name="check" [size]="16"></cf-icon> Live bidding on rare pieces</li>
+        <li><cf-icon name="check" [size]="16"></cf-icon> Tracked orders</li>
+      </ul>
+    </div>
+    <div class="art" aria-hidden="true">
+      <span class="sun"></span>
+      <span class="arch a1"></span><span class="arch a2"></span><span class="arch a3"></span>
+      <span class="dots"></span>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" *ngIf="categories.loading || categories.items.length">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Browse</span><h2>Shop by category</h2></div>
+      <a routerLink="/categories" class="link-arrow">All categories <cf-icon name="arrow-right" [size]="16"></cf-icon></a>
+    </div>
+    <div class="cats">
+      <ng-container *ngIf="!categories.loading; else catSk">
+        <a *ngFor="let c of categories.items" class="cat" [routerLink]="['/products']" [queryParams]="{ category: c.id }">
+          <span class="cat-name">{{ c.name }}</span>
+          <span class="cat-count">{{ c.productCount }} {{ c.productCount === 1 ? 'piece' : 'pieces' }}</span>
+        </a>
+      </ng-container>
+      <ng-template #catSk><div *ngFor="let s of skeletons" class="skeleton cat-sk"></div></ng-template>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED -->
+<section class="section tight">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Hand-picked</span><h2>Featured creations</h2></div>
+      <a routerLink="/products" [queryParams]="{ featured: true }" class="link-arrow">View all <cf-icon name="arrow-right" [size]="16"></cf-icon></a>
+    </div>
+
+    <div class="grid-cards" *ngIf="featured.loading"><cf-skeleton-card *ngFor="let s of skeletons"></cf-skeleton-card></div>
+    <cf-empty-state *ngIf="!featured.loading && featured.error" icon="alert" title="Couldn't load products" [message]="featured.error">
+      <button class="btn btn-outline" (click)="loadFeatured()">Try again</button>
+    </cf-empty-state>
+    <cf-empty-state *ngIf="!featured.loading && !featured.error && !featured.items.length" icon="package"
+      title="New pieces are on their way" message="Our artisans are busy. Check back soon for featured handmade products."
+      actionLabel="Browse all products" actionLink="/products"></cf-empty-state>
+    <div class="grid-cards" *ngIf="!featured.loading && featured.items.length">
+      <cf-product-card *ngFor="let p of featured.items" [product]="p"></cf-product-card>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE AUCTIONS -->
+<section class="auction-band">
+  <div class="container">
+    <div class="section-head light">
+      <div><span class="eyebrow">Bid now</span><h2>Live auctions</h2></div>
+      <a routerLink="/auctions" class="link-arrow">All auctions <cf-icon name="arrow-right" [size]="16"></cf-icon></a>
+    </div>
+
+    <div class="grid-auctions" *ngIf="auctions.loading"><cf-skeleton-card *ngFor="let s of skeletons | slice:0:3"></cf-skeleton-card></div>
+    <cf-empty-state *ngIf="!auctions.loading && auctions.error" icon="alert" title="Couldn't load auctions" [message]="auctions.error">
+      <button class="btn btn-outline" (click)="loadAuctions()">Try again</button>
+    </cf-empty-state>
+    <cf-empty-state *ngIf="!auctions.loading && !auctions.error && !auctions.items.length" icon="gavel"
+      title="No live auctions right now" message="New auctions open regularly. Browse upcoming ones to get ready to bid."
+      actionLabel="See upcoming auctions" actionLink="/auctions"></cf-empty-state>
+    <div class="grid-auctions" *ngIf="!auctions.loading && auctions.items.length">
+      <cf-auction-card *ngFor="let a of auctions.items" [auction]="a"></cf-auction-card>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-card">
+      <div>
+        <h2>Own a piece with a story.</h2>
+        <p>Create a free account to save favorites, place bids and follow your orders.</p>
+      </div>
+      <a class="btn btn-primary btn-lg" routerLink="/register">Join Craftify</a>
+    </div>
+  </div>
+</section>

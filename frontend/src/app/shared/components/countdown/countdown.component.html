@@ -1,0 +1,14 @@
+<ng-container *ngIf="!compact; else small">
+  <div class="cd" [class.done]="done" role="timer" aria-live="off">
+    <div class="unit"><span class="num">{{ pad(days) }}</span><span class="lab">Days</span></div>
+    <span class="sep">:</span>
+    <div class="unit"><span class="num">{{ pad(hours) }}</span><span class="lab">Hours</span></div>
+    <span class="sep">:</span>
+    <div class="unit"><span class="num">{{ pad(minutes) }}</span><span class="lab">Minutes</span></div>
+    <span class="sep">:</span>
+    <div class="unit"><span class="num">{{ pad(seconds) }}</span><span class="lab">Seconds</span></div>
+  </div>
+</ng-container>
+<ng-template #small>
+  <span class="small" [class.done]="done" role="timer">{{ pad(days) }}:{{ pad(hours) }}:{{ pad(minutes) }}:{{ pad(seconds) }}</span>
+</ng-template>

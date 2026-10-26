@@ -1,0 +1,56 @@
+<div class="container pd">
+  <div class="skel-grid" *ngIf="loading"><div class="skeleton big"></div><div><div class="skeleton l1"></div><div class="skeleton l2"></div><div class="skeleton l3"></div></div></div>
+
+  <cf-empty-state *ngIf="!loading && !product" [icon]="notFound ? 'search' : 'alert'" [title]="notFound ? 'Product not found' : 'Something went wrong'"
+    [message]="notFound ? 'This piece may have been sold or removed.' : error" actionLabel="Browse products" actionLink="/products"></cf-empty-state>
+
+  <ng-container *ngIf="!loading && product">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a><span>/</span><a routerLink="/products">Shop</a><span>/</span>
+      <a routerLink="/products" [queryParams]="{ category: product.categoryId }">{{ product.categoryName }}</a>
+    </nav>
+
+    <div class="grid">
+      <cf-gallery [images]="gallery" [alt]="product.name"></cf-gallery>
+
+      <div class="info">
+        <span class="eyebrow">{{ product.categoryName }}</span>
+        <h1>{{ product.name }}</h1>
+        <div class="price-row">
+          <span class="price">{{ product.price | money }}</span>
+          <span class="stock ok" *ngIf="product.stockQuantity > 3">In stock</span>
+          <span class="stock low" *ngIf="lowStock">Only {{ product.stockQuantity }} left</span>
+          <span class="stock out" *ngIf="product.stockQuantity === 0">Sold out</span>
+        </div>
+        <p class="desc pre" *ngIf="product.description">{{ product.description }}</p>
+
+        <a *ngIf="product.hasAuction" class="auction-note" [routerLink]="['/auctions', product.auctionId]">
+          <cf-icon name="gavel" [size]="22"></cf-icon>
+          <span><strong>This piece is up for auction.</strong><br>See the current bid and place yours.</span>
+          <cf-icon name="arrow-right" [size]="18"></cf-icon>
+        </a>
+
+        <div class="buy" *ngIf="product.stockQuantity > 0">
+          <cf-quantity [(value)]="quantity" [max]="maxQty"></cf-quantity>
+          <button class="btn btn-primary btn-lg grow" (click)="addToCart()" [disabled]="adding">
+            <cf-icon name="bag" [size]="18"></cf-icon> {{ adding ? 'Adding…' : 'Add to cart' }}
+          </button>
+          <button type="button" class="fav" [class.on]="favorites.isFavorite(product.id)" (click)="toggleFavorite()" aria-label="Toggle favorite">
+            <cf-icon name="heart" [size]="20" [filled]="favorites.isFavorite(product.id)"></cf-icon>
+          </button>
+        </div>
+
+        <ul class="perks">
+          <li><cf-icon name="check" [size]="16"></cf-icon> Handmade by a Craftify artisan</li>
+          <li><cf-icon name="check" [size]="16"></cf-icon> Order tracked from confirmation to delivery</li>
+          <li><cf-icon name="check" [size]="16"></cf-icon> Each piece is unique and may vary slightly</li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="related" *ngIf="related.length">
+      <div class="section-head"><div><span class="eyebrow">You may also like</span><h2>More from {{ product.categoryName }}</h2></div></div>
+      <div class="grid-cards"><cf-product-card *ngFor="let p of related" [product]="p"></cf-product-card></div>
+    </section>
+  </ng-container>
+</div>

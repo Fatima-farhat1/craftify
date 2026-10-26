@@ -1,0 +1,35 @@
+<article class="ac" [class.live]="status === 'ACTIVE'" [class.ended]="status === 'ENDED'">
+  <a class="media" [routerLink]="['/auctions', auction.id]" [attr.aria-label]="auction.productName">
+    <img [src]="auction.productImage | imgUrl" [alt]="auction.productName" loading="lazy">
+    <span class="tag" [ngClass]="'tag-' + status.toLowerCase()">
+      <ng-container [ngSwitch]="status">
+        <ng-container *ngSwitchCase="'ACTIVE'"><span class="pulse"></span>Live auction</ng-container>
+        <ng-container *ngSwitchCase="'UPCOMING'"><cf-icon name="clock" [size]="13"></cf-icon>Upcoming</ng-container>
+        <ng-container *ngSwitchDefault>Auction ended</ng-container>
+      </ng-container>
+    </span>
+  </a>
+  <div class="body">
+    <span class="cat">{{ auction.categoryName }}</span>
+    <h3 class="name"><a [routerLink]="['/auctions', auction.id]">{{ auction.productName }}</a></h3>
+
+    <div class="stats">
+      <div>
+        <span class="lbl">{{ priceLabel }}</span>
+        <strong class="price">{{ price | money }}</strong>
+      </div>
+      <div *ngIf="status !== 'ENDED'" class="time">
+        <span class="lbl">{{ status === 'ACTIVE' ? 'Ends in' : 'Starts in' }}</span>
+        <cf-countdown [target]="status === 'ACTIVE' ? auction.endTime : auction.startTime"
+                      [serverTime]="auction.serverTime" [compact]="true" (finished)="onCountdownFinished()"></cf-countdown>
+      </div>
+      <div *ngIf="status === 'ENDED'" class="time">
+        <span class="lbl">Bids</span><strong>{{ auction.bidCount }}</strong>
+      </div>
+    </div>
+
+    <a class="btn btn-primary btn-block" [routerLink]="['/auctions', auction.id]">
+      {{ status === 'ENDED' ? 'View Result' : 'View Auction' }}
+    </a>
+  </div>
+</article>

@@ -1,0 +1,16 @@
+.pl { padding-top: 40px; padding-bottom: 40px; }
+.layout { display: grid; grid-template-columns: 270px 1fr; gap: 36px; align-items: start; }
+.filters { padding: 22px; position: sticky; top: calc(var(--header-h) + 16px); }
+.cat-list { display: flex; flex-direction: column; gap: 2px; }
+.cat-list button { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; border: 0; border-radius: 10px; background: transparent; font: inherit; color: var(--ink-soft); text-align: left; }
+.cat-list button:hover { background: var(--beige); }
+.cat-list button.on { background: var(--brand-50); color: var(--brand-800); font-weight: 700; }
+.cat-list small { color: var(--muted); }
+.range { display: flex; align-items: center; gap: 8px; } .range .input { padding: 10px 12px; }
+.filters-toggle { display: none; }
+.grid-cards { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 20px; }
+  .filters { display: none; position: static; } .filters.open { display: block; }
+  .filters-toggle { display: inline-flex; }
+}

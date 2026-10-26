@@ -1,0 +1,8 @@
+<div class="progress" [class.on]="loading$ | async" role="progressbar" aria-label="Loading"><span></span></div>
+
+<ng-container *ngIf="(isAdminArea$ | async) === false; else bare">
+  <cf-header></cf-header>
+  <main class="main"><router-outlet></router-outlet></main>
+  <cf-footer></cf-footer>
+</ng-container>
+<ng-template #bare><router-outlet></router-outlet></ng-template>

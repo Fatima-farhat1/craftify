@@ -20,6 +20,9 @@ export const env = {
     user: required('DB_USER'),
     password: process.env.DB_PASSWORD ?? '',
     database: required('DB_NAME'),
+    // SSL configuration for Aiven
+    ssl: process.env.DB_SSL === 'true',
+    sslCaPath: process.env.DB_SSL_CA_PATH || '',
   },
   jwt: {
     secret: required('JWT_SECRET'),

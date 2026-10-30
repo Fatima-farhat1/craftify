@@ -1,5 +1,7 @@
+
 import mysql, { PoolConnection } from 'mysql2/promise';
 import { env } from './env';
+import fs from 'fs';
 
 export const pool = mysql.createPool({
   host: env.db.host,
@@ -7,24 +9,43 @@ export const pool = mysql.createPool({
   user: env.db.user,
   password: env.db.password,
   database: env.db.database,
+
+  // SSL connection for Aiven MySQL
+  ...(env.db.ssl
+    ? {
+        ssl: {
+          ca: fs.readFileSync(env.db.sslCaPath, 'utf8'),
+          rejectUnauthorized: true,
+        },
+      }
+    : {}),
+
   waitForConnections: true,
   connectionLimit: 10,
-  decimalNumbers: true, // return DECIMAL as numbers, not strings
-  timezone: 'Z',        // JS <-> MySQL dates as UTC
+  decimalNumbers: true,
+  timezone: 'Z',
 });
 
-// Make NOW() / CURRENT_TIMESTAMP UTC too, so DB time comparisons match stored values.
-pool.on('connection', conn => { conn.query("SET time_zone = '+00:00'"); });
+// Set database session timezone to UTC
+pool.on('connection', conn => {
+  conn.query("SET time_zone = '+00:00'");
+});
 
 export async function checkDbConnection(): Promise<void> {
   const conn = await pool.getConnection();
-  await conn.ping();
-  conn.release();
+  try {
+    await conn.ping();
+  } finally {
+    conn.release();
+  }
 }
 
-/** Runs fn inside a transaction: commit on success, rollback on any error. */
-export async function withTransaction<T>(fn: (conn: PoolConnection) => Promise<T>): Promise<T> {
+/** Runs fn inside a transaction. */
+export async function withTransaction<T>(
+  fn: (conn: PoolConnection) => Promise<T>
+): Promise<T> {
   const conn = await pool.getConnection();
+
   try {
     await conn.beginTransaction();
     const result = await fn(conn);

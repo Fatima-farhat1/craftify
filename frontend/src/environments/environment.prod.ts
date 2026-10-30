@@ -1,5 +1,6 @@
+
 export const environment = {
   production: true,
-  apiUrl: 'https://api.your-domain.com/api',
-  serverUrl: 'https://api.your-domain.com',
+  apiUrl: 'https://craftify-backend.onrender.com/api',
+  serverUrl: 'https://craftify-backend.onrender.com',
 };

@@ -8,7 +8,10 @@ import './types';
 
 const app = express();
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({ origin: env.corsOrigin.split(','), credentials: true }));
+app.use(cors({
+  origin: env.corsOrigin.split(',').map(origin => origin.trim()),
+  credentials: true
+}));
 app.use(express.json({ limit: '1mb' }));
 
 app.use('/uploads', express.static(env.uploadDir, { maxAge: '7d', index: false }));

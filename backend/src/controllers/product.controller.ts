@@ -4,7 +4,7 @@ import { CategoryModel } from '../models/category.model';
 import { ProductModel } from '../models/product.model';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
-import { cleanupUploads, removeFiles, toUrl, uploadedFiles } from '../utils/files';
+import { removeFiles, uploadImage, uploadedFiles } from '../utils/files';
 import { parseId } from '../utils/parseId';
 import { sendSuccess } from '../utils/response';
 
@@ -22,7 +22,21 @@ const listQuery = z.object({
 });
 
 const isAdmin = (req: Request) => req.user?.role === 'ADMIN';
-const imageUrls = (req: Request) => uploadedFiles(req).map(f => toUrl(f.filename));
+const imageUrls = async (req: Request): Promise<string[]> => {
+  const urls: string[] = [];
+
+  try {
+    for (const file of uploadedFiles(req)) {
+      const url = await uploadImage(file, 'products');
+      urls.push(url);
+    }
+
+    return urls;
+  } catch (error) {
+    await removeFiles(urls);
+    throw error;
+  }
+};
 
 async function assertCategory(categoryId: number) {
   if (!(await CategoryModel.findById(categoryId))) throw ApiError.badRequest('Selected category does not exist.');
@@ -52,15 +66,41 @@ export const getOne = asyncHandler(async (req: Request, res: Response) => {
 
 export const create = asyncHandler(async (req: Request, res: Response) => {
   await assertCategory(req.body.categoryId);
-  const id = await ProductModel.create(req.body, imageUrls(req));
+
+  const urls = await imageUrls(req);
+
+  let id: number;
+
+  try {
+    id = await ProductModel.create(req.body, urls);
+  } catch (error) {
+    await removeFiles(urls);
+    throw error;
+  }
+
   sendSuccess(res, await ProductModel.findById(id), 201);
 });
 
 export const update = asyncHandler(async (req: Request, res: Response) => {
   const id = parseId(req.params.id);
-  if (!(await ProductModel.findById(id))) throw ApiError.notFound('Product not found.');
-  if (req.body.categoryId !== undefined) await assertCategory(req.body.categoryId);
-  await ProductModel.update(id, req.body, imageUrls(req));
+
+  if (!(await ProductModel.findById(id))) {
+    throw ApiError.notFound('Product not found.');
+  }
+
+  if (req.body.categoryId !== undefined) {
+    await assertCategory(req.body.categoryId);
+  }
+
+  const urls = await imageUrls(req);
+
+  try {
+    await ProductModel.update(id, req.body, urls);
+  } catch (error) {
+    await removeFiles(urls);
+    throw error;
+  }
+
   sendSuccess(res, await ProductModel.findById(id));
 });
 

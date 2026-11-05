@@ -7,7 +7,7 @@ import { UserModel, toPublicUser } from '../models/user.model';
 import { UserService } from '../services/user.service';
 import { ApiError } from '../utils/ApiError';
 import { asyncHandler } from '../utils/asyncHandler';
-import { removeFiles, toUrl, uploadedFiles } from '../utils/files';
+import { removeFiles, uploadImage, uploadedFiles } from '../utils/files';
 import { parseId } from '../utils/parseId';
 import { sendSuccess } from '../utils/response';
 
@@ -27,10 +27,23 @@ export const changePassword = asyncHandler(async (req: Request, res: Response) =
 
 export const uploadAvatar = asyncHandler(async (req: Request, res: Response) => {
   const file = uploadedFiles(req)[0];
-  if (!file) throw ApiError.badRequest('Please choose an image to upload.');
+
+  if (!file) {
+    throw ApiError.badRequest('Please choose an image to upload.');
+  }
+
   const user = (await UserModel.findById(req.user!.id))!;
-  await UserModel.setProfileImage(user.id, toUrl(file.filename));
+  const imageUrl = await uploadImage(file, 'avatars');
+
+  try {
+    await UserModel.setProfileImage(user.id, imageUrl);
+  } catch (error) {
+    await removeFiles([imageUrl]);
+    throw error;
+  }
+
   await removeFiles([user.profile_image]);
+
   sendSuccess(res, toPublicUser((await UserModel.findById(user.id))!));
 });
 

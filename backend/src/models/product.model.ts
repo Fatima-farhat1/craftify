@@ -156,15 +156,22 @@ export const ProductModel = {
       return rows[0].image_url;
     });
   },
+setPrimaryImage(productId: number, imageId: number): Promise<boolean> {
+  return withTransaction(async conn => {
+    const [rows] = await conn.query<ImageRow[]>(
+      'SELECT id FROM product_images WHERE id = ? AND product_id = ?',
+      [imageId, productId]
+    );
 
-  setPrimaryImage(productId: number, imageId: number): Promise<boolean> {
-    return withTransaction(async conn => {
-      const [rows] = await conn.query<ImageRow[]>(
-        'SELECT id FROM product_images WHERE id = ? AND product_id = ?', [imageId, productId]);
-      if (!rows[0]) return false;
-      await conn.query('UPDATE product_images SET is_primary = (id = ?) WHERE product_id = ?', [imageId, productId]);
-      await syncPrimary(conn, productId);
-      return true;
-    });
-  },
+    if (!rows[0]) return false;
+
+    await conn.query(
+      'UPDATE product_images SET is_primary = (id = ?) WHERE product_id = ?',
+      [imageId, productId]
+    );
+
+    await syncPrimary(conn, productId);
+    return true;
+  });
+},
 };
